@@ -27,6 +27,18 @@ function lerpColor(a, b, t)
 	}
 end
 
+function getColorByFloat(val)
+	return {
+		r = val, g = val, b = val
+	}
+end
+
+function getColorByFunction(func)
+	return {
+		r = func(), g = func(), b = func()
+	}
+end
+
 function getSnow()
 	local screenWidth = love.graphics.getWidth()
 	
@@ -37,20 +49,23 @@ function getSnow()
 
 	local colorSpeedValue = speed / 4.5
 
-	local startColor = {
-		r = math.random(0.6, 0.7) * colorSpeedValue, 
-		g = math.random(0.6, 0.7) * colorSpeedValue, 
-		b = math.random(0.6, 0.7) * colorSpeedValue
-	}
+	local minColor = 0.7
+	local maxColor = 0.7
 
 	local endColor = {
-		r = startColor.r + math.random(0.15, 0.35) * colorSpeedValue,
-		g = startColor.g + math.random(0.15, 0.35) * colorSpeedValue,
-		b = startColor.b + math.random(0.15, 0.35) * colorSpeedValue
+		r = math.random(minColor, maxColor) * colorSpeedValue, 
+		g = math.random(minColor, maxColor) * colorSpeedValue, 
+		b = math.random(minColor, maxColor) * colorSpeedValue
 	}
 
-	local whiteColor = { r = 1.0, g = 1.0, b = 1.0 }
-	local blackColor = { r = 0.0, g = 0.0, b = 0.0 }
+	local minOffset = -1.0
+	local maxOffset = 1.0
+
+	local startColor = {
+		r = endColor.r + math.random(minOffset, maxOffset) * colorSpeedValue,
+		g = endColor.g + math.random(minOffset, maxOffset) * colorSpeedValue,
+		b = endColor.b + math.random(minOffset, maxOffset) * colorSpeedValue
+	}
 
 	return { 
 		position = { x = x, y = y }, 
@@ -66,8 +81,7 @@ function getScreenProportion(screenHeight, y)
 end
 
 function love.draw()
-
-	love.graphics.setColor(1, 1, 1)
+	love.graphics.setColor(0.8, 0.8, 0.8)
 	love.graphics.print('Count: '..snowCount, 10, 10)
 
 	for i, j in ipairs(snows) do
@@ -93,7 +107,6 @@ function love.update(dt)
 		position.y = position.y + (100 * dt * snow.speed)
 
 		local proportion = getScreenProportion(screenHeight, position.y)
-
 		snow.color = lerpColor(snow.startColor, snow.endColor, proportion)
 	end
 end
@@ -110,8 +123,8 @@ function onTick(dt)
 
 		if snowY > screenHeight then
 			table.remove(snows, i)
-		end
-	end
+		end	-- local whiteColor = { r = 1.0, g = 1.0, b = 1.0 }
+	end	-- local blackColor = { r = 0.0, g = 0.0, b = 0.0 }
 
 	snowCount = #snows
 end
